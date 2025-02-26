@@ -1,0 +1,41 @@
+\documentclass[tikz,border=3.14mm]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+
+\begin{tikzpicture}[
+  head/.style={rectangle, draw=black, fill=blue!20, minimum width=2cm, minimum height=1cm},
+  explainer/.style={rectangle, draw=black, fill=green!20, minimum width=2cm, minimum height=6cm, align=center},
+  classifier/.style={rectangle, draw=black, fill=red!20, minimum width=2cm, minimum height=1cm},
+  attrmap/.style={rectangle, draw=black, fill=yellow!20, minimum width=2cm, minimum height=1cm, align=center},
+  arrow/.style={-latex, thick},
+  dashedarrow/.style={-latex, thick, dashed}
+]
+
+% Draw attention heads (backbone layers)
+\foreach \i in {1,...,5} {
+  \node[head] (h\i) at (0, -\i*1.5) {Attribution Map \i};
+}
+
+% Draw TVE explainer
+\node[explainer, right=3cm of h3] (explainer) {Task Specific Explainer};
+
+% Draw attribution maps at the same height as the attention heads
+\foreach \i in {1,...,6} {
+  \node[attrmap] (attr\i) at (12, -\i*1.5 +1) {Class activation \i};
+}
+
+% Connect all attention heads to explainer (piggyback)
+\foreach \i in {1,...,5} {
+  \draw[dashedarrow] (h\i.east) -- ++(1.5, 0) -- ++(0, 1.5*\i - 4.5) -- (explainer.west);
+}
+
+% Connect explainer to attribution maps with rectangular dashed lines
+\foreach \i in {1,...,6} {
+  \draw[dashedarrow] (explainer.east) -- ++(1.5, 0) -- ++(0, -1.5*\i + 5.5) -- (attr\i.west);
+}
+
+\end{tikzpicture}
+
+\end{document}
